@@ -1,0 +1,53 @@
+---
+description: Automatically generate a feature documentation markdown file whenever a new feature is developed. Trigger when new files are created or new dependencies are added to requirements.txt or pyproject.toml. Do NOT trigger for edits to existing files.
+globs:
+alwaysApply: false
+---
+
+# Feature Doc Generator
+
+Whenever a new feature is introduced, generate a markdown doc at `docs/features/YYYY-MM-DD_<feature-name>.md`.
+
+## When to Trigger
+
+Trigger when any of the following are detected:
+- A new file has been created
+- A new dependency has been added to `requirements.txt` or `pyproject.toml`
+
+Do NOT trigger when only existing files have been modified.
+
+## What to Do
+
+1. Inspect the current changes — new files created and any new dependencies added
+2. Infer the feature name from the new filename or dependency name
+3. Generate the markdown doc using the template below
+4. Save it to `docs/features/YYYY-MM-DD_<feature-name>.md` (create the folder if it doesn't exist)
+
+## Output Template
+
+# Feature: <Feature Name>
+
+**Date:** YYYY-MM-DD
+**Files Introduced:** <count>
+**New Dependencies:** <count>
+
+---
+
+## Summary
+A clear 2-4 sentence explanation of what this feature does and why it was added.
+
+## Files Introduced
+- `path/to/file.py` — brief description of what this file does
+
+## Dependencies Added
+If none, write "None."
+Otherwise:
+| Package | Version | Purpose |
+|---|---|---|
+| example | 1.0.0 | What it's used for |
+
+## Usage Example
+A realistic code example showing how to use this feature.
+
+## Notes
+Any setup steps, environment variables, or caveats. If none, write "None."
