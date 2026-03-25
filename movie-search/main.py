@@ -260,7 +260,7 @@ def _display_movie_details(movie: Movie) -> None:
     details.add_row("Runtime", runtime)
     details.add_row("Overview", movie.overview or "-")
 
-    console.print(Panel(details, title="Movie Details", title_style="bold magenta"))
+    console.print(Panel(details, title="Movie Details"))
 
 
 def _prompt_and_maybe_show_details(repo: MovieRepository, movies: list[Movie]) -> None:
@@ -420,8 +420,25 @@ def interactive_search() -> None:
             console.print("[bold red]Invalid input.[/] Please enter numeric values for ratings.")
 
 
+def _run_import_flow() -> None:
+    """Prompt for movie count, import, and print summary."""
+    console.print("[bold cyan]Welcome to Movie Importer[/]")
+    num_movies = _read_num_movies(default=100)
+
+    start = time.perf_counter()
+    summary = import_popular_movies(num_movies=num_movies)
+    elapsed = time.perf_counter() - start
+    _print_summary(summary, elapsed)
+
+
 def main() -> None:
-    """CLI entrypoint for batch movie import."""
+    """CLI entrypoint.
+
+    Usage:
+        python main.py              # interactive search (imports first if DB is empty)
+        python main.py --import     # force import, then offer interactive search
+        python main.py --interactive  # interactive search only
+    """
     try:
         settings = get_settings()
     except ValidationError as exc:
@@ -431,21 +448,34 @@ def main() -> None:
     if settings.debug:
         logging.basicConfig(level=logging.DEBUG)
 
-    if "--interactive" in sys.argv:
+    args = set(sys.argv[1:])
+
+    # Explicit import mode
+    if "--import" in args:
+        _run_import_flow()
+        go_interactive = console.input("Start interactive movie search? [y/N]: ").strip().lower()
+        if go_interactive in {"y", "yes"}:
+            interactive_search()
+        return
+
+    # Explicit interactive mode (legacy flag kept for compatibility)
+    if "--interactive" in args:
         interactive_search()
         return
 
-    console.print("[bold cyan]Welcome to Movie Importer[/]")
-    num_movies = _read_num_movies(default=100)
+    # Default: go straight to interactive search; import first if DB is empty
+    initialize_database()
+    repo = MovieRepository()
+    try:
+        movie_count = repo.count()
+    except RepositoryError:
+        movie_count = 0
 
-    start = time.perf_counter()
-    summary = import_popular_movies(num_movies=num_movies)
-    elapsed = time.perf_counter() - start
-    _print_summary(summary, elapsed)
+    if movie_count == 0:
+        console.print("[bold yellow]Your database is empty.[/] Let's import some movies first.\n")
+        _run_import_flow()
 
-    start_query = console.input("Start interactive movie search? [y/N]: ").strip().lower()
-    if start_query in {"y", "yes"}:
-        interactive_search()
+    interactive_search()
 
 
 if __name__ == "__main__":
