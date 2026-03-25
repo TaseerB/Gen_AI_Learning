@@ -1,6 +1,7 @@
 """Application settings loaded from environment variables."""
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings
@@ -17,7 +18,8 @@ class Settings(BaseSettings):
     tmdb_base_url: str = "https://api.themoviedb.org/3"
     debug: bool = False
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    _env_path = Path(__file__).resolve().parents[1] / ".env"
+    model_config = {"env_file": str(_env_path), "env_file_encoding": "utf-8"}
 
     @field_validator("tmdb_api_key")
     @classmethod
