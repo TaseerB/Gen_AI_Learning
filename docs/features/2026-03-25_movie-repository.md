@@ -43,5 +43,5 @@ print(repo.find_by_title("club"))
 ```
 
 ## Notes
-- When providing an injected SQLite connection (e.g. `:memory:`) for tests, ensure `conn.row_factory = sqlite3.Row` and that `database/schema.sql` has been applied to that connection.
+- When providing an injected SQLite connection (e.g. `:memory:`) for tests, ensure `conn.row_factory = sqlite3.Row` and that `movie-search/database/schema.sql` has been applied to that connection.
 

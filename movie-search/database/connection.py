@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def _project_root() -> Path:
-    # database/connection.py -> project root
+    # movie-search/database/connection.py -> movie-search project root
     return Path(__file__).resolve().parents[1]
 
 
@@ -112,4 +112,3 @@ def database_session() -> Iterator[sqlite3.Connection]:
         raise
     finally:
         conn.close()
-

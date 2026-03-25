@@ -19,4 +19,3 @@ CREATE TABLE IF NOT EXISTS movies (
 CREATE INDEX IF NOT EXISTS idx_movies_title ON movies(title);
 CREATE INDEX IF NOT EXISTS idx_movies_release_date ON movies(release_date);
 CREATE INDEX IF NOT EXISTS idx_movies_vote_average ON movies(vote_average);
-

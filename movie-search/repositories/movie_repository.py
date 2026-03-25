@@ -4,7 +4,7 @@ import json
 import logging
 import sqlite3
 from contextlib import contextmanager
-from typing import Iterator
+from typing import Any, Iterator
 
 from database.connection import get_connection
 from models.movie import Movie
@@ -259,6 +259,137 @@ class MovieRepository:
         movies = [self._row_to_movie(r) for r in rows]
         logger.info("Found %s movie(s) in rating range %s..%s", len(movies), min_rating, max_rating)
         return movies
+
+    def get_top_rated(self, limit: int = 10) -> list[Movie]:
+        """Fetch the top rated movies (highest `vote_average` first)."""
+        if limit <= 0:
+            return []
+
+        logger.debug("Finding top rated movies limit=%s", limit)
+        with self._connection_scope() as conn:
+            try:
+                rows = conn.execute(
+                    """
+                    SELECT * FROM movies
+                    WHERE vote_average IS NOT NULL
+                    ORDER BY vote_average DESC
+                    LIMIT ?
+                    """,
+                    (limit,),
+                ).fetchall()
+            except sqlite3.Error as exc:
+                logger.exception("Failed to find top rated movies")
+                raise RepositoryError("Failed to find top rated movies") from exc
+
+        movies = [self._row_to_movie(r) for r in rows]
+        logger.info("Found %s top rated movie(s) limit=%s", len(movies), limit)
+        return movies
+
+    def get_recent_releases(self, years: int = 2, limit: int = 10) -> list[Movie]:
+        """Fetch movies released in the last `years` years."""
+        if years <= 0 or limit <= 0:
+            return []
+
+        logger.debug("Finding recent releases years=%s limit=%s", years, limit)
+        # SQLite stores release_date in ISO format (YYYY-MM-DD). Use string-safe date comparisons.
+        modifier = f"-{int(years)} years"
+        with self._connection_scope() as conn:
+            try:
+                rows = conn.execute(
+                    """
+                    SELECT * FROM movies
+                    WHERE release_date IS NOT NULL
+                      AND release_date != ''
+                      AND release_date >= date('now', ?)
+                    ORDER BY release_date DESC
+                    LIMIT ?
+                    """,
+                    (modifier, limit),
+                ).fetchall()
+            except sqlite3.Error as exc:
+                logger.exception("Failed to find recent releases")
+                raise RepositoryError("Failed to find recent releases") from exc
+
+        movies = [self._row_to_movie(r) for r in rows]
+        logger.info("Found %s recent release(s) years=%s limit=%s", len(movies), years, limit)
+        return movies
+
+    def get_random_movie(self) -> Movie | None:
+        """Return a random movie recommendation (prefers movies with ratings)."""
+        with self._connection_scope() as conn:
+            try:
+                row = conn.execute(
+                    """
+                    SELECT * FROM movies
+                    WHERE vote_average IS NOT NULL
+                    ORDER BY RANDOM()
+                    LIMIT 1
+                    """
+                ).fetchone()
+            except sqlite3.Error as exc:
+                logger.exception("Failed to get random movie")
+                raise RepositoryError("Failed to get random movie") from exc
+
+        if row is not None:
+            return self._row_to_movie(row)
+
+        # Fallback: if no rated movies exist, pick any movie.
+        with self._connection_scope() as conn:
+            try:
+                row = conn.execute(
+                    """
+                    SELECT * FROM movies
+                    ORDER BY RANDOM()
+                    LIMIT 1
+                    """
+                ).fetchone()
+            except sqlite3.Error as exc:
+                logger.exception("Failed to get fallback random movie")
+                raise RepositoryError("Failed to get random movie") from exc
+
+        if row is None:
+            return None
+        return self._row_to_movie(row)
+
+    def get_statistics(self) -> dict[str, Any]:
+        """Return basic database statistics about stored movies."""
+        logger.debug("Computing movie statistics")
+        with self._connection_scope() as conn:
+            try:
+                row = conn.execute(
+                    """
+                    SELECT
+                      COUNT(*) AS total_movies,
+                      SUM(CASE WHEN vote_average IS NOT NULL THEN 1 ELSE 0 END) AS rated_movies,
+                      AVG(vote_average) AS avg_rating,
+                      MAX(vote_average) AS max_rating,
+                      MIN(vote_average) AS min_rating
+                    FROM movies
+                    """
+                ).fetchone()
+            except sqlite3.Error as exc:
+                logger.exception("Failed to compute movie statistics")
+                raise RepositoryError("Failed to compute movie statistics") from exc
+
+        if row is None:
+            return {
+                "total_movies": 0,
+                "rated_movies": 0,
+                "avg_rating": None,
+                "max_rating": None,
+                "min_rating": None,
+            }
+
+        def _none_if_null(value: Any) -> Any:
+            return None if value is None else value
+
+        return {
+            "total_movies": int(row["total_movies"]) if row["total_movies"] is not None else 0,
+            "rated_movies": int(row["rated_movies"]) if row["rated_movies"] is not None else 0,
+            "avg_rating": _none_if_null(row["avg_rating"]),
+            "max_rating": _none_if_null(row["max_rating"]),
+            "min_rating": _none_if_null(row["min_rating"]),
+        }
 
     def count(self) -> int:
         """Return total number of movies in the database.

@@ -10,8 +10,8 @@
 Adds a local SQLite database for persisting movie data and a small connection/transaction management layer. This enables the project to store TMDB results locally for faster repeat queries and offline access. The schema is idempotent and can be applied multiple times safely.
 
 ## Files Introduced
-- `database/schema.sql` — Defines the SQLite `movies` table and supporting indexes.
-- `database/connection.py` — Provides connection creation, schema initialization, and a transaction-scoped context manager.
+- `movie-search/database/schema.sql` — Defines the SQLite `movies` table and supporting indexes.
+- `movie-search/database/connection.py` — Provides connection creation, schema initialization, and a transaction-scoped context manager.
 
 ## Dependencies Added
 None.
@@ -35,6 +35,6 @@ with database_session() as conn:
 ```
 
 ## Notes
-- The database file is created at `data/movies.db` automatically (the `data/` directory will be created if missing).
+- The database file is created at `movie-search/data/movies.db` automatically (the `data/` directory will be created if missing).
 - `genres` is stored as JSON text (e.g. `["Drama","Thriller"]`).
 
