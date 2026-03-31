@@ -25,7 +25,23 @@ None — `main.py` already existed and was updated in place.
 ```bash
 # Make sure your .env has a valid TMDB_API_KEY, then run:
 cd movie-search
-python main.py
+python3 main.py
+```
+
+Additional Python 3 commands:
+
+```bash
+# Install dependencies
+python3 -m pip install -r requirements.txt
+
+# Force import flow
+python3 main.py --import
+
+# Interactive search only
+python3 main.py --interactive
+
+# Run tests
+python3 -m pytest -q
 ```
 
 Expected output:
@@ -55,4 +71,4 @@ DEBUG=true
 - A valid `TMDB_API_KEY` must be present in `.env`. The script exits with a clear error message if it is missing.
 - Overviews are truncated to 100 characters to keep the table readable.
 - Movies that fail validation (e.g. missing title or invalid ID from the API) are silently skipped rather than crashing the entire run.
-- Install the new dependency with `pip install -r requirements.txt` (or just `pip install rich`).
+- Install dependencies with `python3 -m pip install -r requirements.txt` (or just `python3 -m pip install rich`).

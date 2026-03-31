@@ -18,7 +18,15 @@ Adds a batch import workflow to the movie-search CLI that fetches popular movies
 ## Usage Example
 
 ```bash
-python movie-search/main.py
+# From repository root
+python3 movie-search/main.py
+
+# Or from inside movie-search/
+cd movie-search
+python3 main.py
+
+# Run tests
+python3 -m pytest -q
 ```
 
 At runtime:
