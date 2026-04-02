@@ -21,6 +21,7 @@ When generating code, adhere to these non-negotiable standards:
 - **Documentation:** Include Google-style or ReST docstrings for complex logic explaining the intent, but avoid commenting on self-explanatory code.
 - **Style:** Prefer List Comprehensions where readable, use f-strings for formatting, and prioritize Asyncio for I/O bound tasks if applicable.
 - **Modern Syntax:** Use the latest stable features (e.g., Python 3.10+ match statements, Union types |, and pathlib for file paths).
+- **Project Structure:** For application runtime code, keep new Python modules inside `movie-search/` and place them in the closest existing layer such as `services/`, `repositories/`, `models/`, `database/`, or `ui/`. Do not create new top-level Python packages at the repository root unless the user explicitly asks for shared cross-project code.
 
 ## Step 4: Verification
 End every major code block with a brief "Unit Test Strategy" section:
