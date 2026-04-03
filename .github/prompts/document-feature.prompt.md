@@ -7,6 +7,10 @@ agent: "agent"
 
 Generate a feature documentation file for the development iteration described by the user. This doc will serve as a future reference for understanding what was built, why, and how to use it.
 
+## Default Behavior
+
+When a user asks to create, add, or implement a feature, generating this feature doc is the default follow-up action unless the user explicitly opts out.
+
 ## Steps
 
 1. **Gather context** — Search the workspace for recently changed or newly introduced files relevant to the feature. Look at imports, entry points, tests, and any existing docs under `docs/features/` or `movie-search/docs/features/` to understand prior doc conventions.
@@ -63,6 +67,8 @@ Generate a feature documentation file for the development iteration described by
 
 ## Rules
 
+- Treat feature documentation generation as required by default for feature creation tasks, unless the user explicitly says not to generate docs.
+- Follow the template and rules in this file exactly; do not improvise section names, ordering, or metadata fields.
 - Use **today's date** for the `Date` field.
 - Keep section headers exactly as shown — do not rename or reorder them.
 - File counts in the metadata must match the actual bullet lists.

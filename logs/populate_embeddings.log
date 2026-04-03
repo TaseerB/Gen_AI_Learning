@@ -1,0 +1,82 @@
+2026-04-03 16:30:18,413 | INFO | sentence_transformers.SentenceTransformer | Use pytorch device_name: mps
+2026-04-03 16:30:18,413 | INFO | sentence_transformers.SentenceTransformer | Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2026-04-03 16:30:18,803 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:18,844 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/modules.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:19,097 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:19,097 | WARNING | huggingface_hub.utils._http | Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-03 16:30:19,138 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:19,392 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:19,447 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:19,700 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:19,740 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/README.md "HTTP/1.1 200 OK"
+2026-04-03 16:30:19,996 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:20,039 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/modules.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:20,294 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:20,337 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:20,599 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-04-03 16:30:20,862 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:20,905 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:21,291 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:21,334 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:21,587 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:21,628 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:21,903 | INFO | httpx | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-03 16:30:22,165 | INFO | httpx | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-03 16:30:22,471 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:22,514 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:22,772 | INFO | httpx | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2 "HTTP/1.1 200 OK"
+2026-04-03 16:30:23,141 | INFO | services.embedding_service | Loaded embedding model 'all-MiniLM-L6-v2' (dimension=384, max_seq_length=256)
+2026-04-03 16:30:23,352 | INFO | repositories.chroma_repository | Initialized Chroma collection 'movies' at /Users/emumba1/Desktop/Repos/Gen_AI_Learning/movie-search/data/chroma (dimension=384)
+2026-04-03 16:30:23,358 | INFO | repositories.movie_repository | Movie count=460
+2026-04-03 16:30:23,365 | INFO | repositories.chroma_repository | Chroma collection count=0
+2026-04-03 16:30:34,688 | INFO | sentence_transformers.SentenceTransformer | Use pytorch device_name: mps
+2026-04-03 16:30:34,688 | INFO | sentence_transformers.SentenceTransformer | Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2026-04-03 16:30:35,077 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:35,122 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/modules.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:35,382 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:35,383 | WARNING | huggingface_hub.utils._http | Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-03 16:30:35,427 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:35,687 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:35,750 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:36,015 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:36,059 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/README.md "HTTP/1.1 200 OK"
+2026-04-03 16:30:36,314 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:36,358 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/modules.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:36,610 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:36,652 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:36,948 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-04-03 16:30:37,341 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:37,402 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:37,775 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:37,818 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:38,079 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:38,122 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:38,385 | INFO | httpx | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-03 16:30:38,643 | INFO | httpx | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-03 16:30:38,952 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-03 16:30:38,998 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-04-03 16:30:39,256 | INFO | httpx | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2 "HTTP/1.1 200 OK"
+2026-04-03 16:30:39,520 | INFO | services.embedding_service | Loaded embedding model 'all-MiniLM-L6-v2' (dimension=384, max_seq_length=256)
+2026-04-03 16:30:39,641 | INFO | repositories.chroma_repository | Initialized Chroma collection 'movies' at /Users/emumba1/Desktop/Repos/Gen_AI_Learning/movie-search/data/chroma (dimension=384)
+2026-04-03 16:30:39,643 | INFO | repositories.movie_repository | Movie count=460
+2026-04-03 16:30:39,647 | INFO | repositories.chroma_repository | Chroma collection count=0
+2026-04-03 16:30:50,572 | INFO | repositories.chroma_repository | Initialized Chroma collection 'movies' at /Users/emumba1/Desktop/Repos/Gen_AI_Learning/movie-search/data/chroma (dimension=384)
+2026-04-03 16:30:50,574 | INFO | repositories.movie_repository | Movie count=460
+2026-04-03 16:30:50,575 | INFO | repositories.chroma_repository | Chroma collection count=0
+2026-04-03 16:30:50,579 | INFO | repositories.movie_repository | Found 256 movie(s) (limit=256 offset=0)
+2026-04-03 16:30:55,515 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:30:57,534 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:30:59,781 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:01,943 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:04,011 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:06,223 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:08,265 | INFO | repositories.chroma_repository | Upserted 31 movie embeddings into Chroma
+2026-04-03 16:31:10,308 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:10,309 | INFO | repositories.movie_repository | Found 204 movie(s) (limit=256 offset=256)
+2026-04-03 16:31:12,384 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:14,516 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:16,696 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:18,867 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:20,943 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:23,112 | INFO | repositories.chroma_repository | Upserted 32 movie embeddings into Chroma
+2026-04-03 16:31:24,001 | INFO | repositories.chroma_repository | Upserted 12 movie embeddings into Chroma
