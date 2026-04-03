@@ -21,7 +21,7 @@ def main() -> None:
     """CLI entrypoint.
 
     Usage:
-        python main.py              # interactive search (imports first if DB is empty)
+        python main.py              # interactive search, including semantic search if embeddings exist
         python main.py --import     # force import, then offer interactive search
         python main.py --interactive  # interactive search only
     """

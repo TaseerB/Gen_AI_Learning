@@ -221,6 +221,64 @@ class MovieRepository:
         logger.info("Found %s movie(s) matching title=%r", len(movies), title)
         return movies
 
+    def find_by_keywords(self, query: str, limit: int = 10) -> list[Movie]:
+        """Search movies by SQL LIKE across title and overview tokens.
+
+        Each whitespace-delimited token is matched independently and results are
+        ranked by the number of matched tokens, then by rating.
+
+        Args:
+            query: Natural language or keyword query.
+            limit: Maximum number of movies to return.
+
+        Returns:
+            A list of matching `Movie` objects.
+
+        Raises:
+            RepositoryError: If the query fails.
+        """
+
+        normalized_tokens = [token.strip() for token in query.lower().split() if token.strip()]
+        if not normalized_tokens or limit <= 0:
+            return []
+
+        token_conditions: list[str] = []
+        token_parameters: list[str] = []
+        score_fragments: list[str] = []
+        score_parameters: list[str] = []
+
+        for token in normalized_tokens:
+            pattern = f"%{token}%"
+            token_conditions.append("(LOWER(title) LIKE ? OR LOWER(overview) LIKE ?)")
+            token_parameters.extend([pattern, pattern])
+            score_fragments.append(
+                "CASE WHEN LOWER(title) LIKE ? OR LOWER(overview) LIKE ? THEN 1 ELSE 0 END"
+            )
+            score_parameters.extend([pattern, pattern])
+
+        where_clause = " OR ".join(token_conditions)
+        score_expression = " + ".join(score_fragments)
+
+        sql = f"""
+            SELECT *, ({score_expression}) AS keyword_score
+            FROM movies
+            WHERE {where_clause}
+            ORDER BY keyword_score DESC, vote_average DESC, title ASC
+            LIMIT ?
+        """
+
+        logger.debug("Finding movies by keyword query=%r limit=%s", query, limit)
+        with self._connection_scope() as conn:
+            try:
+                rows = conn.execute(sql, (*score_parameters, *token_parameters, limit)).fetchall()
+            except sqlite3.Error as exc:
+                logger.exception("Failed to find movies by keyword query=%r", query)
+                raise RepositoryError(f"Failed to find movies by keyword query={query!r}") from exc
+
+        movies = [self._row_to_movie(r) for r in rows]
+        logger.info("Found %s movie(s) for keyword query=%r", len(movies), query)
+        return movies
+
     def find_by_rating_range(self, min_rating: float, max_rating: float) -> list[Movie]:
         """Fetch movies with ratings in an inclusive range.
 
