@@ -28,3 +28,14 @@ End every major code block with a brief "Unit Test Strategy" section:
 - List 2-3 specific test cases (Happy Path, Edge Case, and Error State).
 - Suggest using pytest or unittest for implementation.
 - Briefly mention any necessary mock data or testing environment requirements.
+
+## Step 5: Feature Documentation (Default)
+When implementing a new feature, feature enhancement, or non-trivial behavior change, you MUST generate a feature documentation file automatically unless the user explicitly opts out.
+
+- Use the existing prompt rules in `.github/prompts/document-feature.prompt.md` as the canonical format and process.
+- Place docs in the correct location:
+	- Root-level work: `docs/features/`
+	- Sub-project work (for example `movie-search/`): `<subproject>/docs/features/`
+- File naming must be: `YYYY-MM-DD_<kebab-case-feature-name>.md`.
+- The doc must be created in the same implementation session after code changes are complete.
+- If no feature-level change was made (for example tiny typo fix), skip doc generation.

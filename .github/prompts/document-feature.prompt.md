@@ -13,15 +13,17 @@ When a user asks to create, add, or implement a feature, generating this feature
 
 ## Steps
 
-1. **Gather context** — Search the workspace for recently changed or newly introduced files relevant to the feature. Look at imports, entry points, tests, and any existing docs under `docs/features/` or `movie-search/docs/features/` to understand prior doc conventions.
+1. **Read existing docs first** — Before touching any source code, list and read all files under `docs/features/` and `movie-search/docs/features/`. These docs are a pre-built index of the codebase. Extract the full picture of what already exists: files, dependencies, and design decisions already recorded. This is your primary context source and avoids re-reading code that is already documented.
 
-2. **Determine file location** — Check whether the feature belongs to a sub-project (e.g. `movie-search/`) or the root project. Place the doc in the matching `docs/features/` folder:
+2. **Read only the delta** — Using the knowledge from step 1, identify what is *new or changed* for the current feature (files not mentioned in any existing doc). Read only those files. Do not re-read files that are already fully described in an existing doc.
+
+3. **Determine file location** — Check whether the feature belongs to a sub-project (e.g. `movie-search/`) or the root project. Place the doc in the matching `docs/features/` folder:
    - Root-level feature → `docs/features/`
    - Sub-project feature → `<subproject>/docs/features/`
 
-3. **Generate the doc** — Create a new Markdown file named `YYYY-MM-DD_<kebab-case-feature-name>.md` using today's date. Use the template below exactly.
+4. **Generate the doc** — Create a new Markdown file named `YYYY-MM-DD_<kebab-case-feature-name>.md` using today's date. Use the template below exactly.
 
-4. **Populate each section** with factual, specific content drawn from the actual files — do not guess or fabricate file names, dependency versions, or behavior.
+5. **Populate each section** with factual, specific content drawn from the delta files and the existing docs — do not guess or fabricate file names, dependency versions, or behavior.
 
 ---
 
