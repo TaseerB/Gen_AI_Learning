@@ -385,37 +385,35 @@ class HybridSearchEngine:
         if not filters:
             return None
 
-        chroma_filter: dict[str, object] = {}
+        clauses: list[dict[str, object]] = []
 
         # Handle rating range
         min_rating = filters.get("min_rating")
         max_rating = filters.get("max_rating")
 
         if isinstance(min_rating, (int, float)):
-            chroma_filter.setdefault("rating", {})
-            if isinstance(chroma_filter["rating"], dict):
-                chroma_filter["rating"]["$gte"] = min_rating  # type: ignore
+            clauses.append({"rating": {"$gte": float(min_rating)}})
 
         if isinstance(max_rating, (int, float)):
-            chroma_filter.setdefault("rating", {})
-            if isinstance(chroma_filter["rating"], dict):
-                chroma_filter["rating"]["$lte"] = max_rating  # type: ignore
+            clauses.append({"rating": {"$lte": float(max_rating)}})
 
-        # Handle year range (convert to date-based filtering)
+        # Handle year range
         min_year = filters.get("min_year")
         max_year = filters.get("max_year")
 
         if isinstance(min_year, int):
-            chroma_filter.setdefault("year", {})
-            if isinstance(chroma_filter["year"], dict):
-                chroma_filter["year"]["$gte"] = min_year  # type: ignore
+            clauses.append({"year": {"$gte": min_year}})
 
         if isinstance(max_year, int):
-            chroma_filter.setdefault("year", {})
-            if isinstance(chroma_filter["year"], dict):
-                chroma_filter["year"]["$lte"] = max_year  # type: ignore
+            clauses.append({"year": {"$lte": max_year}})
 
-        result = chroma_filter if chroma_filter else None
+        if not clauses:
+            result = None
+        elif len(clauses) == 1:
+            result = clauses[0]
+        else:
+            # Chroma requires top-level boolean operator for multi-clause filters.
+            result = {"$and": clauses}
         logger.debug("Built Chroma filter: %s", result)
         return result
 

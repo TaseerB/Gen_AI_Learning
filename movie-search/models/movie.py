@@ -24,6 +24,7 @@ class Movie:
     genres: list[str] | None = None
     poster_path: str | None = None
     runtime: int | None = None
+    search_score: float | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.id, int) or self.id <= 0:

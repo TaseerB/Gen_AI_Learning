@@ -20,11 +20,42 @@ from models.movie import Movie
 from repositories.chroma_repository import ChromaRepository, ChromaRepositoryError
 from repositories.movie_repository import MovieRepository, RepositoryError
 from search.hybrid_search import HybridSearchEngine, HybridSearchError
-from search.reranker import SearchReranker
+from search.reranker import SearchReranker, SearchRerankerError
 from ui.display import display_movie_details, render_movie_table
 from utils.query_expander import QueryExpander
+from services.embedding_service import EmbeddingService
 
 console = Console()
+
+GENRE_INTENT_KEYWORDS: dict[str, str] = {
+    "action": "Action",
+    "adventure": "Adventure",
+    "comedy": "Comedy",
+    "funny": "Comedy",
+    "romance": "Romance",
+    "romantic": "Romance",
+    "drama": "Drama",
+    "thriller": "Thriller",
+    "horror": "Horror",
+    "scary": "Horror",
+    "sci-fi": "Sci-Fi",
+    "scifi": "Sci-Fi",
+    "science fiction": "Sci-Fi",
+    "fantasy": "Fantasy",
+    "animation": "Animation",
+    "crime": "Crime",
+    "mystery": "Mystery",
+}
+
+
+def _extract_genre_intent_from_query(query: str) -> list[str]:
+    """Extract likely genre intent terms from free-text query."""
+    normalized = query.lower()
+    detected: list[str] = []
+    for keyword, genre in GENRE_INTENT_KEYWORDS.items():
+        if keyword in normalized and genre not in detected:
+            detected.append(genre)
+    return detected
 
 
 def _ensure_embeddings_available() -> ChromaRepository | None:
@@ -73,9 +104,19 @@ def _advanced_search(repo: MovieRepository, engine: HybridSearchEngine, expander
     """Option 2: Advanced search with filters, expansion, and reranking."""
     console.print(
         Panel(
-            "[bold magenta]Advanced Search[/]\nFind movies with custom filters and ranking strategies.",
+            "[bold magenta]Advanced Search[/]\n"
+            "Find movies with custom filters and ranking strategies.\n"
+            "[dim]Tip:[/] Start with broad filters first, then tighten.",
             border_style="magenta",
         )
+    )
+
+    console.print(
+        "[dim]Try queries:[/]\n"
+        "  - space adventure\n"
+        "  - mind bending thriller\n"
+        "  - funny family movie\n"
+        "  - romantic drama"
     )
 
     query = console.input("[bold yellow]Enter your query:[/] ").strip()
@@ -88,6 +129,10 @@ def _advanced_search(repo: MovieRepository, engine: HybridSearchEngine, expander
     max_rating_raw = console.input("  Max rating (0-10) [skip]: ").strip()
     min_year_raw = console.input("  Min year [skip]: ").strip()
     max_year_raw = console.input("  Max year [skip]: ").strip()
+    console.print(
+        "  [dim]Genre examples:[/] Action, Adventure, Comedy, Drama, Thriller, Sci-Fi, "
+        "Romance, Horror, Fantasy, Animation"
+    )
     genres_raw = console.input("  Genres comma-separated [skip]: ").strip()
 
     filters: dict[str, Any] = {}
@@ -106,46 +151,156 @@ def _advanced_search(repo: MovieRepository, engine: HybridSearchEngine, expander
         console.print("[bold red]Invalid filter values.[/]\n")
         return
 
+    inferred_genres = _extract_genre_intent_from_query(query)
+    if "genres" not in filters and inferred_genres:
+        filters["genres"] = inferred_genres
+        console.print(
+            f"[dim]Detected genre intent from query:[/] {', '.join(inferred_genres)}"
+        )
+
+    # Normalize obvious user input mistakes to avoid accidental zero-result searches.
+    if "min_rating" in filters and "max_rating" in filters:
+        if filters["min_rating"] > filters["max_rating"]:
+            filters["min_rating"], filters["max_rating"] = filters["max_rating"], filters["min_rating"]
+
+    if "min_year" in filters and "max_year" in filters:
+        if filters["min_year"] > filters["max_year"]:
+            filters["min_year"], filters["max_year"] = filters["max_year"], filters["min_year"]
+
     console.print("\n[bold]Ranking Strategy:[/]")
     console.print("  1. Semantic (embedding similarity)")
     console.print("  2. Quality First (rating-focused)")
     console.print("  3. Trending (popularity + recency)")
     console.print("  4. Balanced (all signals)")
     strategy_choice = console.input("[bold yellow]Choose (1-4) [4]:[/] ").strip() or "4"
-    strategy_map = {"1": "semantic", "2": "quality_first", "3": "trending", "4": "balanced"}
-    strategy = strategy_map.get(strategy_choice, "balanced")
+    debug_trace = (
+        console.input("[bold yellow]Show debug trace (expanded queries + stage counts)? [y/N]:[/] ")
+        .strip()
+        .lower()
+        in {"y", "yes"}
+    )
+    strategy_mapping = {
+        # (HybridSearchEngine strategy, SearchReranker strategy)
+        "1": ("semantic", "balanced"),
+        "2": ("rating", "quality_first"),
+        "3": ("recency", "trending"),
+        "4": ("hybrid", "balanced"),
+    }
+    engine_strategy, reranker_strategy = strategy_mapping.get(strategy_choice, ("hybrid", "balanced"))
 
     try:
         with console.status("[bold cyan]Expanding query..."):
             expanded_queries = expander.expand_query(query, max_expansions=3)
 
-        with console.status("[bold cyan]Searching multiple query variations..."):
-            all_results: list[tuple[Movie, float]] = []
-            for q in expanded_queries:
-                try:
-                    results = engine.search(
-                        query=q,
-                        filters=filters if filters else None,
-                        top_k=20,
-                        ranking_strategy=strategy,
-                    )
-                    for movie in results:
-                        score = getattr(movie, "search_score", 0.5)
-                        all_results.append((movie, score))
-                except HybridSearchError:
-                    pass
+        if debug_trace:
+            console.print(f"[dim]Expanded queries:[/] {', '.join(expanded_queries)}")
+
+        # Progressive relaxation so users still get results when filters are too strict.
+        filter_stages: list[tuple[str, dict[str, Any] | None]] = []
+        active_filters = filters if filters else None
+        filter_stages.append(("your exact filters", active_filters))
+
+        if active_filters:
+            # Relax year before genre to keep semantic intent aligned longer.
+            no_year_filters = dict(active_filters)
+            no_year_filters.pop("min_year", None)
+            no_year_filters.pop("max_year", None)
+            filter_stages.append(("without year filter", no_year_filters or None))
+
+            no_rating_filters = dict(no_year_filters)
+            no_rating_filters.pop("min_rating", None)
+            no_rating_filters.pop("max_rating", None)
+            filter_stages.append(("without rating filter", no_rating_filters or None))
+
+            no_genre_filters = dict(no_rating_filters)
+            no_genre_filters.pop("genres", None)
+            if no_genre_filters != no_rating_filters:
+                filter_stages.append(("without genre filter", no_genre_filters or None))
+
+        filter_stages.append(("no filters", None))
+
+        all_results: list[tuple[Movie, float]] = []
+        used_stage = ""
+        stage_counts: list[tuple[str, int]] = []
+        for stage_label, stage_filters in filter_stages:
+            with console.status(f"[bold cyan]Searching ({stage_label})..."):
+                stage_results: list[tuple[Movie, float]] = []
+                for q in expanded_queries:
+                    try:
+                        results = engine.search(
+                            query=q,
+                            filters=stage_filters,
+                            top_k=20,
+                            ranking_strategy=engine_strategy,
+                        )
+                        for movie in results:
+                            score = movie.search_score if movie.search_score is not None else 0.5
+                            stage_results.append((movie, score))
+                    except HybridSearchError:
+                        continue
+
+            stage_counts.append((stage_label, len(stage_results)))
+
+            if stage_results:
+                all_results = stage_results
+                used_stage = stage_label
+                break
+
+        if debug_trace and stage_counts:
+            trace_table = Table(title="Advanced Search Debug Trace", title_style="bold yellow")
+            trace_table.add_column("Stage", style="bold")
+            trace_table.add_column("Hits", justify="right")
+            for label, count in stage_counts:
+                trace_table.add_row(label, str(count))
+            console.print(trace_table)
 
         if not all_results:
-            console.print("[bold yellow]No results found with those filters and queries.[/]\n")
+            console.print(
+                "[bold yellow]No results found.[/] Try relaxing filters:\n"
+                "  - Leave year empty\n"
+                "  - Use rating range like 5 to 10\n"
+                "  - Use broader genres like Action, Drama, Comedy"
+            )
             return
+
+        if used_stage and used_stage != "your exact filters":
+            console.print(
+                f"[bold yellow]No matches with strict filters.[/] Showing results {used_stage}."
+            )
 
         with console.status("[bold cyan]Reranking results..."):
             reranker = SearchReranker()
-            reranked = reranker.rerank(all_results, strategy=strategy)
+            reranked = reranker.rerank(all_results, strategy=reranker_strategy)
+
+        # Final intent alignment boost keeps query-relevant movies above broad semantic matches.
+        query_tokens = {token for token in query.lower().split() if len(token) > 2}
+
+        boosted_results: list[tuple[Movie, float]] = []
+        for movie, score in reranked:
+            overview_text = (movie.overview or "").lower()
+            title_text = movie.title.lower()
+            genre_set = {g.lower() for g in (movie.genres or [])}
+
+            token_hits = sum(
+                1
+                for token in query_tokens
+                if token in title_text or token in overview_text or token in genre_set
+            )
+            token_boost = min(0.20, 0.05 * token_hits)
+
+            inferred_genre_boost = 0.0
+            if inferred_genres and movie.genres:
+                overlap = len({g.lower() for g in inferred_genres} & genre_set)
+                inferred_genre_boost = min(0.20, 0.10 * overlap)
+
+            boosted_score = min(1.0, score + token_boost + inferred_genre_boost)
+            boosted_results.append((movie, boosted_score))
+
+        boosted_results.sort(key=lambda pair: pair[1], reverse=True)
 
         deduplicated: list[Movie] = []
         seen_ids = set()
-        for movie, _ in reranked:
+        for movie, _ in boosted_results:
             if movie.id not in seen_ids:
                 deduplicated.append(movie)
                 seen_ids.add(movie.id)
@@ -158,7 +313,7 @@ def _advanced_search(repo: MovieRepository, engine: HybridSearchEngine, expander
 
         _display_and_detail_results("Advanced Search Results", deduplicated)
 
-    except HybridSearchError as exc:
+    except (HybridSearchError, SearchRerankerError) as exc:
         console.print(f"[bold red]Search failed:[/] {exc}\n")
 
 
@@ -195,7 +350,7 @@ def _movie_recommendations(repo: MovieRepository, chroma: ChromaRepository) -> N
     try:
         with console.status("[bold cyan]Generating embedding for selected movie..."):
             overview_text = f"{selected_movie.title}. {selected_movie.overview}"
-            query_embedding = chroma._embedding.embed_text(overview_text)
+            query_embedding = EmbeddingService().embed_text(overview_text)
 
         with console.status("[bold cyan]Searching for similar movies..."):
             similar_results = chroma.search(query_embedding=query_embedding, top_k=10)
@@ -324,7 +479,7 @@ def _compare_search_methods(repo: MovieRepository) -> None:
             semantic_results = []
             if chroma:
                 try:
-                    embedding = chroma._embedding.embed_text(query)
+                    embedding = EmbeddingService().embed_text(query)
                     semantic_data = chroma.search(query_embedding=embedding, top_k=10)
                     for result in semantic_data:
                         movie_id = result.get("id")
@@ -433,9 +588,9 @@ def _run_interactive_menu() -> None:
         return
 
     engine = HybridSearchEngine(
-        ChromaRepository(),
-        repo,
-        ChromaRepository()._embedding,
+           ChromaRepository(), 
+           repo, 
+           EmbeddingService(),  # Updated to use EmbeddingService
     )
     expander = QueryExpander()
     chroma = _ensure_embeddings_available()
